@@ -4,11 +4,13 @@ rm(list=ls(all=TRUE))
 library(Rnmr1D)
 
 # Directory for example data 
-# data_dir <- system.file("extra", package = "Rnmr1D")
+#data_dir <- system.file("extra", package = "Rnmr1D")
+#RAWDIR <- file.path(data_dir, "CD_BBI_16P02")
 
-datapath <- "NMRdata" # CHANGE ME to the directory containing your demultiplexed reverse-read fastqs
-
-RAWDIR <- file.path(datapath,"MS_DV_OY16")
+datapath <- "~/NMR-Spectroscopy"
+RAWDIR <- file.path(datapath,"NMRdata/MS_DV_OY16")
+samplefile <- file.path(datapath, "NMRdata/Samples.txt")
+samples <- read.table(samplefile, sep="\t", header=T,stringsAsFactors=FALSE)
 
 procParams <- Spec1rProcpar
 procParams$LOGFILE <- ""
@@ -20,10 +22,9 @@ procParams$ZFFAC <- 4
 procParams$OPTPHC1 <- TRUE
 procParams$TSP <- TRUE
 
-metadata <- generateMetadata(RAWDIR, procParams)
+metadata <- generateMetadata(RAWDIR, procParams,samples)
 ID <- 1
-ACQDIR <- file.path(RAWDIR,"MS_DV_OY16-BS1")
-#ACQDIR <- metadata$rawids[ID,1]
+ACQDIR <- metadata$rawids[ID,1]
 spec <- Spec1rDoProc(Input=ACQDIR, param=procParams)
 plot( spec$ppm, spec$int, type="l", col="blue", 
       xlab="ppm", ylab="Intensities", 
